@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humanity's Forks in the Road</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #141418;
+    --border: #2a2a35;
+    --accent: #c8a96e;
+    --accent2: #7eb8c9;
+    --chosen: #c06060;
+    --optimal: #60a86e;
+    --text: #d4cfc8;
+    --muted: #6b6560;
+    --glow: rgba(200,169,110,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    padding: 3rem 2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(ellipse, rgba(200,169,110,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .legend {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot.chosen { background: var(--chosen); box-shadow: 0 0 6px var(--chosen); }
+  .dot.optimal { background: var(--optimal); box-shadow: 0 0 6px var(--optimal); }
+  .dot.era { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+  .container {
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .tree-group {
+    margin-bottom: 4rem;
+    position: relative;
+  }
+
+  .tree-group::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2rem;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    opacity: 0.3;
+  }
+
+  .era-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--accent);
+  }
+
+  .era-range {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .node {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .node::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 1.2rem;
+    width: 1.2rem;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .node-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+
+  .node-header:hover {
+    border-color: var(--accent);
+    background: rgba(200,169,110,0.04);
+  }
+
+  .node-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .node.fork > .node-header { border-left: 3px solid var(--muted); }
+  
+  .node-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+
+  .node-year {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  .expand-btn {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+
+  .node-header:hover .expand-btn { color: var(--accent); }
+
+  .node-body {
+    display: none;
+    margin-left: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .node-body.open {
+    display: block;
+    animation: slideDown 0.25s ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 1px;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    overflow: hidden;
+    background: #0f0f12;
+  }
+
+  @media (max-width: 600px) {
+    .panel { grid-template-columns: 1fr; }
+  }
+
+  .panel-col {
+    padding: 1rem 1.2rem;
+  }
+
+  .panel-col:first-child {
+    border-right: 1px solid var(--border);
+  }
+
+  .panel-col-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  .chosen-col .panel-col-label { color: var(--chosen); }
+  .optimal-col .panel-col-label { color: var(--optimal); }
+
+  .panel-text {
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .panel-text strong {
+    color: var(--text);
+    font-weight: normal;
+    font-style: italic;
+  }
+
+  .cascade {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .cascade-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .children {
+    margin-left: 1.5rem;
+    padding-left: 0;
+    border-left: 1px dashed var(--border);
+    margin-top: 0.5rem;
+  }
+
+  .disconnect-label {
+    display: inline-block;
+    margin: 2rem 0 1.5rem;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--accent2);
+    border-radius: 2px;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent2);
+  }
+
+  .timeline-spine {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 10;
+    opacity: 0.5;
+  }
+
+  .spine-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+
+  .spine-dot:hover {
+    background: var(--accent);
+    transform: scale(1.5);
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Humanity's Forks in the Road</h1>
+  <p class="subtitle">Critical decision points & their divergent trajectories</p>
+  <div class="legend">
+    <div class="legend-item"><div class="dot chosen"></div> Path Chosen</div>
+    <div class="legend-item"><div class="dot optimal"></div> Optimal Path</div>
+    <div class="legend-item"><div class="dot era"></div> Era Anchor</div>
+  </div>
+</header>
+
+<div class="container" id="main"></div>
+
+<footer>Click any node to expand · Each branch implies cascading counterfactuals</footer>
+
+<script>
+const data = [
+  {
+    era: "Ancient Foundations",
+    range: "3000 BCE – 500 CE",
+    nodes: [
+      {
+        id: "agri",
+        title: "Agricultural Revolution Concentration",
+        year: "~8000 BCE",
+        chosen: "Surplus farming enabled rigid hierarchies, land ownership, slavery, and caloric monocultures — structural inequality baked in from the start.",
+        optimal: "Diversified agri-pastoralism with common land stewardship. Smaller surpluses but distributed control. No feudal landlord archetype emerges.",
+        cascade_chosen: "Inequality → empires → conquest as economic model",
+        cascade_optimal: "Slower population growth, higher per-capita wellbeing, no famine-conquest cycles",
+        children: [
+          {
+            id: "slavery",
+            title: "Institutionalization of Slavery",
+            year: "~3500 BCE",
+            chosen: "Surplus labor solved by ownership of humans. Normalized coercive labor as economic foundation.",
+            optimal: "Cooperative labor guilds; technology incentivized to replace drudgery rather than humans doing it.",
+            cascade_chosen: "Racial hierarchy, colonial labor systems, centuries of dehumanization",
+            cascade_optimal: "Earlier mechanization push, distributed technical knowledge"
+          }
+        ]
+      },
+      {
+        id: "axial",
+        title: "Axial Age Philosophy — Institutionalization",
+        year: "500–300 BCE",
+        chosen: "Buddhism, Confucianism, Greek philosophy codified into rigid orthodoxies controlled by priestly/state classes. Insight became dogma.",
+        optimal: "Open philosophical inquiry maintained as living practice, not doctrine. Scientific empiricism and ethical reasoning co-evolve.",
+        cascade_chosen: "Religion vs. science tension lasts millennia; knowledge gatekept by clergy",
+        cascade_optimal: "Enlightenment-type thinking ~1500 years earlier"
+      }
+    ]
+  },
+  {
+    era: "Medieval Compression",
+    range: "500 – 1400 CE",
+    nodes: [
+      {
+        id: "rome_fall",
+        title: "Roman Collapse — Knowledge Fragmentation",
+        year: "476 CE",
+        chosen: "Roman administrative collapse destroyed institutional knowledge. Monasteries hoarded rather than disseminated texts.",
+        optimal: "Byzantine-Islamic knowledge preservation actively transmitted westward earlier; decentralized Roman successor states maintain literacy.",
+        cascade_chosen: "Dark Ages knowledge gap, ~500 year scientific regression",
+        cascade_optimal: "Printing press equivalent possibly by 900 CE"
+      },
+      {
+        id: "mongol",
+        title: "Mongol Destruction of Baghdad",
+        year: "1258 CE",
+        chosen: "House of Wisdom destroyed. Islamic Golden Age terminated abruptly. Scientific center of the world erased.",
+        optimal: "Mongols integrate and patronize as they did in China — House of Wisdom becomes Mongol-Islamic synthesis hub.",
+        cascade_chosen: "Islamic world never fully recovers scientific leadership; West fills vacuum",
+        cascade_optimal: "Global scientific center remains multicultural; Renaissance happens with fuller prior knowledge"
+      }
+    ]
+  },
+  {
+    era: "Colonial Bifurcation",
+    range: "1400 – 1800 CE",
+    disconnect: true,
+    disconnectNote: "New trajectory tree — colonial era creates structural breaks so severe they override earlier counterfactuals",
+    nodes: [
+      {
+        id: "conquest",
+        title: "Americas — Conquest vs. Contact",
+        year: "1492 CE",
+        chosen: "Extraction, genocide, forced conversion. Civilizations with distinct scientific/agricultural knowledge annihilated.",
+        optimal: "Controlled contact, trade, knowledge exchange. Aztec agricultural science + European metallurgy + Andean engineering = extraordinary synthesis.",
+        cascade_chosen: "Plantation economies, racial capitalism, centuries of resource drain from Global South",
+        cascade_optimal: "Three-way Afro-Euramerican knowledge exchange; possibly fastest scientific acceleration in history",
+        children: [
+          {
+            id: "slave_trade",
+            title: "Transatlantic Slave Trade",
+            year: "1500s–1800s",
+            chosen: "12+ million enslaved. Entire economies built on human trafficking. Generational wealth transferred from Africa to Europe/Americas.",
+            optimal: "Wage labor, African trade partnerships. West African states as equals, not sources of human capital.",
+            cascade_chosen: "Modern racial wealth gaps, colonialism of Africa, 400 years of institutional trauma",
+            cascade_optimal: "Africa retains population and talent; industrializes independently; multipolar world by 1900"
+          }
+        ]
+      },
+      {
+        id: "printing_church",
+        title: "Printing Press — Captured by Power",
+        year: "1450s CE",
+        chosen: "Church and state quickly moved to license and control printing. Index of Forbidden Books. Information warfare as default.",
+        optimal: "Open press culture established as norm immediately. Reformation, Enlightenment, and Scientific Revolution compressed into one generation.",
+        cascade_chosen: "Centuries of epistemological gatekeeping before free press norms established",
+        cascade_optimal: "Democratic governance concepts emerge 200 years earlier"
+      }
+    ]
+  },
+  {
+    era: "Industrial Inflection",
+    range: "1750 – 1950 CE",
+    disconnect: true,
+    disconnectNote: "New trajectory — industrial decisions compound on colonial base in ways structurally separate from pre-colonial forks",
+    nodes: [
+      {
+        id: "fossil",
+        title: "Energy System Lock-In — Fossil Fuels",
+        year: "1760–1820 CE",
+        chosen: "Coal/steam path chosen for speed and capital returns. Alternatives (wind, water, later solar concepts) systematically underinvested.",
+        optimal: "Mixed energy portfolio from the start. Steam as transition, not endpoint. Biomass → hydro → early electrical research pathway.",
+        cascade_chosen: "200 years of carbon lock-in; climate crisis; fossil fuel geopolitics; wars for oil",
+        cascade_optimal: "Climate change likely not a crisis; geopolitical map looks radically different without oil states",
+        children: [
+          {
+            id: "climate",
+            title: "1970s Climate Warning — Ignored",
+            year: "1970s CE",
+            chosen: "Exxon's own scientists confirmed anthropogenic climate change. Industry-funded denial campaign followed. Policy action delayed 50 years.",
+            optimal: "1970s-80s energy transition begins. Renewables at 2024 cost-performance levels by ~2000.",
+            cascade_chosen: "1.5°C already breached; billions of climate-displaced people projected",
+            cascade_optimal: "Carbon neutrality by 2010; no climate migration crisis"
+          }
+        ]
+      },
+      {
+        id: "wwi",
+        title: "WWI — Managed vs. Total War",
+        year: "1914 CE",
+        chosen: "Alliance automaticity dragged all powers into total war despite no existential stakes for most participants.",
+        optimal: "Mediation architecture (early League concept) absorbs Austro-Serbian crisis. War localized or avoided.",
+        cascade_chosen: "WWII, Holocaust, nuclear weapons, Cold War — entire 20th century horror cascade",
+        cascade_optimal: "No Hitler (product of Versailles humiliation). Decolonization potentially earlier and negotiated.",
+        children: [
+          {
+            id: "versailles",
+            title: "Versailles — Punishment vs. Reconstruction",
+            year: "1919 CE",
+            chosen: "Humiliation of Germany. Reparations designed to cripple. Perfect conditions for nationalist revanchism.",
+            optimal: "Marshall Plan-style reconstruction of all parties. German democracy nurtured, not punished.",
+            cascade_chosen: "WWII, 60 million dead, Holocaust, nuclear arms race, Cold War",
+            cascade_optimal: "Stable European federation possibly by 1940"
+          }
+        ]
+      },
+      {
+        id: "nuclear",
+        title: "Nuclear Technology — Weapons First",
+        year: "1945 CE",
+        chosen: "Manhattan Project resources poured into weapons. Hiroshima/Nagasaki used despite Japanese near-surrender signals. Arms race launched.",
+        optimal: "Nuclear demonstrated as deterrent without civilian use. Rapid international control regime established. Energy application prioritized.",
+        cascade_chosen: "70-year existential risk; 9 nuclear states; near-misses (1983, 1962); non-proliferation crisis",
+        cascade_optimal: "Nuclear energy powers world by 1970s without climate cost; no Chernobyl/Fukushima culture of fear"
+      }
+    ]
+  },
+  {
+    era: "Information Age",
+    range: "1950 – Present",
+    disconnect: true,
+    disconnectNote: "New trajectory — digital systems create acceleration dynamic structurally unlike prior eras",
+    nodes: [
+      {
+        id: "internet",
+        title: "Internet Governance — Commons vs. Commerce",
+        year: "1990s CE",
+        chosen: "Early commons architecture abandoned to commercial interests. Advertising as core business model. Attention economy emerges.",
+        optimal: "Public utility model. Protocol-level privacy standards. No surveillance capitalism architecture.",
+        cascade_chosen: "Misinformation ecosystem, political polarization, mental health crisis, surveillance states",
+        cascade_optimal: "Informed global citizenry; AI trained on less toxic data; healthier epistemic commons"
+      },
+      {
+        id: "ai_govern",
+        title: "AI Development — Race vs. Coordination",
+        year: "2010s–Present",
+        chosen: "Competitive race dynamics between labs and nations. Safety research chronically underfunded relative to capability. Deployment ahead of governance.",
+        optimal: "International coordination body (CERN-model) established early. Safety and capability co-develop. Deployment gated on alignment verification.",
+        cascade_chosen: "Existential risk window open; deepfakes/disinfo at scale; labor displacement without safety net",
+        cascade_optimal: "AI as managed civilizational upgrade; benefits distributed; risks mitigated before deployment"
+      },
+      {
+        id: "pandemic",
+        title: "Pandemic Preparedness — Chronically Defunded",
+        year: "Post-SARS 2003",
+        chosen: "Every post-SARS/MERS/Ebola report recommended global surveillance + stockpile investment. Funding evaporated within 2 years each time.",
+        optimal: "WHO empowered with binding response authority + funding. Rapid-response vaccine infrastructure maintained.",
+        cascade_chosen: "COVID-19: 7M+ official deaths, $12T+ economic loss, trust in institutions collapsed",
+        cascade_optimal: "COVID contained at ~SARS scale (800 deaths). Vaccine deployed in 3 months not 12."
+      }
+    ]
+  }
+];
+
+function makeNode(node, depth = 0) {
+  const el = document.createElement('div');
+  el.className = 'node fork';
+  el.style.marginLeft = depth > 0 ? '1.5rem' : '1.5rem';
+
+  el.innerHTML = `
+    <div class="node-header" onclick="toggle(this)">
+      <div class="node-indicator" style="background:var(--chosen);box-shadow:0 0 6px var(--chosen)"></div>
+      <div>
+        <div class="node-title">${node.title}</div>
+        <div class="node-year">${node.year}</div>
+      </div>
+      <div class="expand-btn">▸ expand</div>
+    </div>
+    <div class="node-body">
+      <div class="panel">
+        <div class="panel-col chosen-col">
+          <div class="panel-col-label">Path Taken</div>
+          <div class="panel-text">${node.chosen}</div>
+          ${node.cascade_chosen ? `<div class="cascade"><div class="cascade-label">→ Cascade</div>${node.cascade_chosen}</div>` : ''}
+        </div>
+        <div class="panel-col optimal-col">
+          <div class="panel-col-label">Optimal Path</div>
+          <div class="panel-text"><strong>${node.optimal}</strong></div>
+          ${node.cascade_optimal ? `<div class="cascade"><div class="cascade-label">→ Cascade</div>${node.cascade_optimal}</div>` : ''}
+        </div>
+      </div>
+      ${node.children ? `<div class="children">${node.children.map(c => makeNode(c, depth+1).outerHTML).join('')}</div>` : ''}
+    </div>
+  `;
+  return el;
+}
+
+function toggle(header) {
+  const body = header.nextElementSibling;
+  const btn = header.querySelector('.expand-btn');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  btn.textContent = isOpen ? '▸ expand' : '▾ collapse';
+}
+
+window.toggle = toggle;
+
+const main = document.getElementById('main');
+
+data.forEach((era, i) => {
+  if (era.disconnect && i > 0) {
+    const disc = document.createElement('div');
+    disc.className = 'disconnect-label';
+    disc.textContent = `⊗ Structural Break — New Trajectory`;
+    main.appendChild(disc);
+  }
+
+  const group = document.createElement('div');
+  group.className = 'tree-group';
+
+  const label = document.createElement('div');
+  label.className = 'era-label';
+  label.innerHTML = `${era.era} <span class="era-range">${era.range}</span>`;
+  group.appendChild(label);
+
+  if (era.disconnectNote) {
+    const note = document.createElement('div');
+    note.style.cssText = 'font-size:0.7rem;color:var(--muted);margin-bottom:1rem;padding-left:1rem;font-style:italic;';
+    note.textContent = era.disconnectNote;
+    group.appendChild(note);
+  }
+
+  era.nodes.forEach(node => {
+    group.appendChild(makeNode(node));
+  });
+
+  main.appendChild(group);
+});
+</script>
+</body>
+</html>

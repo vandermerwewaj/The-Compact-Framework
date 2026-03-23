@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who's Watching — X-Risk Directory</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0e14;
+  --surface: #13151e;
+  --card: #181b26;
+  --border: #242736;
+  --text: #c8ccd8;
+  --muted: #5e6278;
+  --dim: #3a3d52;
+
+  --ai: #5b8dee;
+  --ai-bg: rgba(91,141,238,0.08);
+  --bio: #4db87a;
+  --bio-bg: rgba(77,184,122,0.08);
+  --nuclear: #e8a040;
+  --nuclear-bg: rgba(232,160,64,0.08);
+  --climate: #48c4c4;
+  --climate-bg: rgba(72,196,196,0.08);
+  --broad: #c47ed4;
+  --broad-bg: rgba(196,126,212,0.08);
+
+  --entry: #e05454;
+  --engage: #5bc4a0;
+  --academic: #7eb4e8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Animated star field bg */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 70%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.06) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+header {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 2.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media(max-width:600px){ header { grid-template-columns: 1fr; } }
+
+.wordmark {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: #fff;
+  line-height: 1.1;
+}
+
+.wordmark span {
+  font-style: italic;
+  opacity: 0.5;
+}
+
+.header-sub {
+  margin-top: 0.6rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  max-width: 440px;
+}
+
+.clock-box {
+  text-align: right;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.clock-val {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--entry);
+  letter-spacing: 0.05em;
+}
+
+.clock-label {
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+/* Filter bar */
+.filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(12,14,20,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 2.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-label {
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-right: 0.5rem;
+}
+
+.filter-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.filter-btn:hover { border-color: var(--text); color: var(--text); }
+.filter-btn.active { color: #fff; border-color: currentColor; }
+.filter-btn[data-f="all"].active { color: #fff; border-color: #fff; background: rgba(255,255,255,0.05); }
+.filter-btn[data-f="ai"].active { color: var(--ai); border-color: var(--ai); background: var(--ai-bg); }
+.filter-btn[data-f="bio"].active { color: var(--bio); border-color: var(--bio); background: var(--bio-bg); }
+.filter-btn[data-f="nuclear"].active { color: var(--nuclear); border-color: var(--nuclear); background: var(--nuclear-bg); }
+.filter-btn[data-f="climate"].active { color: var(--climate); border-color: var(--climate); background: var(--climate-bg); }
+.filter-btn[data-f="broad"].active { color: var(--broad); border-color: var(--broad); background: var(--broad-bg); }
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.intro-note {
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--broad);
+  background: var(--broad-bg);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+  border-radius: 0 3px 3px 0;
+}
+
+.intro-note strong { color: var(--text); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.org-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+}
+
+.org-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.org-card.hidden { display: none; }
+
+.card-top {
+  padding: 1.1rem 1.2rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.card-type-bar {
+  height: 2px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.org-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1rem;
+  color: #fff;
+  line-height: 1.2;
+  margin-top: 0.3rem;
+}
+
+.org-abbr {
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.org-location {
+  font-size: 0.63rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+}
+
+.tag {
+  font-size: 0.58rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+
+.tag-ai { color: var(--ai); border-color: var(--ai); background: var(--ai-bg); }
+.tag-bio { color: var(--bio); border-color: var(--bio); background: var(--bio-bg); }
+.tag-nuclear { color: var(--nuclear); border-color: var(--nuclear); background: var(--nuclear-bg); }
+.tag-climate { color: var(--climate); border-color: var(--climate); background: var(--climate-bg); }
+.tag-broad { color: var(--broad); border-color: var(--broad); background: var(--broad-bg); }
+
+.card-body {
+  padding: 0.9rem 1.2rem;
+  flex: 1;
+}
+
+.org-desc {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.org-desc strong { color: var(--text); font-weight: 500; }
+
+.card-footer {
+  padding: 0.7rem 1.2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.engagement-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.65rem;
+}
+
+.eng-label {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  border: 1px solid;
+}
+
+.eng-public { color: var(--engage); border-color: var(--engage); }
+.eng-donate { color: var(--entry); border-color: var(--entry); }
+.eng-career { color: var(--academic); border-color: var(--academic); }
+.eng-research { color: var(--broad); border-color: var(--broad); }
+
+.eng-text { color: var(--muted); flex: 1; }
+
+.org-url {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.6rem;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--dim);
+  padding-bottom: 1px;
+  transition: color 0.15s, border-color 0.15s;
+  text-decoration: none;
+}
+
+.org-url:hover { color: var(--text); border-color: var(--text); }
+
+/* Context section */
+.context-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.context-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: #fff;
+  margin-bottom: 1.2rem;
+}
+
+.context-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+@media(max-width:700px){ .context-grid { grid-template-columns: 1fr; } }
+
+.context-col {
+  background: var(--card);
+  padding: 1.2rem;
+}
+
+.context-col-title {
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  font-weight: 500;
+}
+
+.context-item {
+  margin-bottom: 0.7rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.context-item strong { color: var(--text); display: block; font-weight: 500; margin-bottom: 0.1rem; }
+
+.count-bar {
+  margin-top: 2rem;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.count-item {
+  text-align: center;
+}
+
+.count-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: #fff;
+  line-height: 1;
+}
+
+.count-label {
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.62rem;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="wordmark">Who's <span>Watching</span></div>
+    <div class="wordmark" style="font-style:italic;font-size:clamp(1rem,2vw,1.4rem);opacity:0.6;margin-top:0.2rem">A Directory of Existential Risk Organisations</div>
+    <div class="header-sub">The knowledge exists. The alarm has been raised. Here is who is doing the work — and how you can be part of it.</div>
+  </div>
+  <div class="clock-box">
+    <div class="clock-val">89s</div>
+    <div class="clock-label">Doomsday Clock<br>to Midnight — 2026</div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter by focus:</span>
+  <button class="filter-btn active" data-f="all">All</button>
+  <button class="filter-btn" data-f="ai">AI</button>
+  <button class="filter-btn" data-f="bio">Bio</button>
+  <button class="filter-btn" data-f="nuclear">Nuclear</button>
+  <button class="filter-btn" data-f="climate">Climate</button>
+  <button class="filter-btn" data-f="broad">Broad / Multi-Risk</button>
+</div>
+
+<main>
+  <div class="intro-note">
+    You are not the first to be alarmed. <strong>This field — called Existential Risk Studies (X-Risk) — has been growing since the 1990s.</strong> The gap is not awareness; every organisation here knows exactly what the forks are. The gap is political will, coordination, and the structural incentive problem: optimal paths require collective action while bad paths only require individuals following short-term gain. Your awareness is the precondition for everything else.
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="context-section">
+    <div class="context-title">Understanding the Field</div>
+    <div class="context-grid">
+      <div class="context-col">
+        <div class="context-col-title">Two schools of thought</div>
+        <div class="context-item"><strong>Long-termism / X-Risk focus</strong>Worried primarily about future catastrophic events — AI misalignment, engineered pandemics, nuclear war. Centres: FLI, CSER, MIRI, Anthropic safety team.</div>
+        <div class="context-item"><strong>Present-harm focus</strong>Argues AI's existing harms (bias, surveillance, labour displacement) deserve equal urgency and that sci-fi framing distracts from real victims today. Centres: DAIR Institute, AI Now, Algorithmic Justice League.</div>
+        <div class="context-item" style="color:#3a3d52;font-style:italic">Note: These camps often argue. FLI's Max Tegmark publicly called this infighting a gift to Big Tech that divides everyone who wants to constrain it.</div>
+      </div>
+      <div class="context-col">
+        <div class="context-col-title">Key concepts to know</div>
+        <div class="context-item"><strong>X-Risk</strong>Existential risk — anything that could permanently curtail humanity's potential or cause extinction.</div>
+        <div class="context-item"><strong>GCR</strong>Global Catastrophic Risk — events killing 10%+ of humanity. Civilisation-disrupting but not necessarily terminal.</div>
+        <div class="context-item"><strong>Alignment Problem</strong>How to ensure AI systems pursue goals humans actually want, not proxy metrics that diverge at scale.</div>
+        <div class="context-item"><strong>Collective Action Failure</strong>When individually rational choices produce collectively irrational outcomes. Root cause of most governance failures on this list.</div>
+        <div class="context-item"><strong>Longtermism</strong>Ethical view that future people's welfare matters as much as present people's — implies very large weight on x-risk reduction.</div>
+      </div>
+      <div class="context-col">
+        <div class="context-col-title">What actually moves the needle</div>
+        <div class="context-item"><strong>Policy engagement</strong>CSER, FLI, and GCF all have direct government pathways. Letters to legislators citing these orgs' work have documented impact.</div>
+        <div class="context-item"><strong>Talent pipeline</strong>The field is talent-constrained, not funding-constrained at the moment. Smart people moving into AI safety, biosecurity policy, or nuclear law have outsized impact.</div>
+        <div class="context-item"><strong>Informed public pressure</strong>The AI pause letter failed to pause AI — but it accelerated EU AI Act, triggered US Senate hearings, and shifted the Overton window. Public awareness is causal.</div>
+        <div class="context-item"><strong>Philanthropy</strong>Effective Altruism community has directed ~$500M into x-risk work. Individual donations to smaller orgs (ERO, CSER) are genuinely impactful at their scale.</div>
+      </div>
+    </div>
+
+    <div class="count-bar" style="margin-top:1.5rem">
+      <div class="count-item"><div class="count-num">30k+</div><div class="count-label">Signed AI pause letter</div></div>
+      <div class="count-item"><div class="count-num">89s</div><div class="count-label">Doomsday clock 2026</div></div>
+      <div class="count-item"><div class="count-num">~15</div><div class="count-label">Major x-risk orgs globally</div></div>
+      <div class="count-item"><div class="count-num">64%</div><div class="count-label">Americans want AI slowed until provably safe</div></div>
+      <div class="count-item"><div class="count-num">$500M+</div><div class="count-label">Philanthropic $ into x-risk</div></div>
+    </div>
+  </div>
+</main>
+
+<footer>Data current as of early 2026 · Organisations evolve — verify current engagement pathways at each org's site</footer>
+
+<script>
+const orgs = [
+  {
+    name: "Future of Life Institute",
+    abbr: "FLI",
+    location: "Boston, USA + Europe",
+    tags: ["ai","bio","nuclear","climate"],
+    color: "#5b8dee",
+    desc: "The org behind the AI pause letter. <strong>Founded 2014 by MIT cosmologist Max Tegmark</strong> and Skype co-founder Jaan Tallinn. Policy advocacy, grantmaking, and media. Convened the Asilomar AI Principles. Direct access to government and lab leadership.",
+    engagement: [
+      { type: "public", label: "Public", text: "Sign open letters, follow @FLIxrisk, read their podcasts and reports. Their 'Existential Risk' podcast is accessible." },
+      { type: "donate", label: "Donate", text: "Accepts donations; grants go to safety research globally." },
+      { type: "career", label: "Career", text: "Actively hires policy staff, researchers, comms roles." }
+    ],
+    url: "futureoflife.org"
+  },
+  {
+    name: "Centre for the Study of Existential Risk",
+    abbr: "CSER",
+    location: "Cambridge University, UK",
+    tags: ["ai","bio","nuclear","broad"],
+    color: "#c47ed4",
+    desc: "<strong>Cambridge University's interdisciplinary X-risk research centre.</strong> Rigorous academic work with direct policy pathways into UK and EU government. Covers AI, biotech, nuclear, and environmental tipping points. Hosts public events and a newsletter.",
+    engagement: [
+      { type: "public", label: "Public", text: "Free public events, Cambridge Festival participation, newsletter, open-access research papers." },
+      { type: "donate", label: "Donate", text: "Accepts donations via Cambridge University — directly funds research posts." },
+      { type: "career", label: "Career", text: "Academic and research positions; PhD supervision in x-risk-adjacent fields." }
+    ],
+    url: "cser.ac.uk"
+  },
+  {
+    name: "Existential Risk Observatory",
+    abbr: "ERO",
+    location: "Netherlands (global reach)",
+    tags: ["ai","broad"],
+    color: "#5b8dee",
+    desc: "<strong>Most public-facing of the x-risk orgs.</strong> Merged with Campaign for AI Safety in 2024. Focuses on awareness, policy submissions to governments, and events. Explicitly trying to grow the number of people who understand and care about these risks. Good entry point.",
+    engagement: [
+      { type: "public", label: "Public", text: "Hosts events, publishes accessible explainers. Actively wants public engagement — not just academics." },
+      { type: "donate", label: "Donate", text: "Small org; donations have direct impact on staffing and outreach." },
+      { type: "career", label: "Career", text: "Volunteer and paid roles in research, comms, policy, and events." }
+    ],
+    url: "existentialriskobservatory.org"
+  },
+  {
+    name: "Bulletin of Atomic Scientists",
+    abbr: "BAS",
+    location: "Chicago, USA",
+    tags: ["nuclear","ai","climate"],
+    color: "#e8a040",
+    desc: "<strong>Home of the Doomsday Clock.</strong> Founded in 1945 by Manhattan Project scientists who immediately regretted the bomb. Now tracks nuclear, AI, and climate risk. The most recognisable public signal in x-risk. Credibility across political lines is rare and valuable.",
+    engagement: [
+      { type: "public", label: "Public", text: "Free online magazine, Doomsday Clock updates, public webinars. Highly accessible journalism on deep risks." },
+      { type: "donate", label: "Donate", text: "Nonprofit; donations support the clock, journalism, and policy work." },
+      { type: "research", label: "Research", text: "Publishes original analysis; experts contribute op-eds and peer review." }
+    ],
+    url: "thebulletin.org"
+  },
+  {
+    name: "Machine Intelligence Research Institute",
+    abbr: "MIRI",
+    location: "Berkeley, USA",
+    tags: ["ai"],
+    color: "#5b8dee",
+    desc: "<strong>Oldest AI safety research org, founded 2000.</strong> Highly technical — focused on the mathematics of AI alignment. Pessimistic about current approaches; believes the problem is harder than mainstream safety labs acknowledge. Influential in shaping how the field thinks about long-term risk.",
+    engagement: [
+      { type: "donate", label: "Donate", text: "Donations fund core technical research. One of the most donor-funded orgs in the field." },
+      { type: "career", label: "Career", text: "Hires primarily technical researchers (math, CS, logic). High bar; very selective." },
+      { type: "public", label: "Public", text: "Publishes technical and semi-accessible research; less public-facing than FLI." }
+    ],
+    url: "intelligence.org"
+  },
+  {
+    name: "Global Challenges Foundation",
+    abbr: "GCF",
+    location: "Stockholm, Sweden",
+    tags: ["broad","nuclear","climate","bio"],
+    color: "#c47ed4",
+    desc: "<strong>Annual Global Catastrophic Risk report</strong> — the most comprehensive quantitative ranking of civilisational risks. Founded by Swedish financier Laszlo Szombatfalvy. Runs global governance design competitions; thinks deeply about planetary institutions. Less visible but highly influential in policy circles.",
+    engagement: [
+      { type: "public", label: "Public", text: "Annual report is free and highly readable. Best single document to understand the full risk landscape." },
+      { type: "research", label: "Research", text: "Runs competitions for global governance reform proposals — open to anyone with ideas." }
+    ],
+    url: "globalchallenges.org"
+  },
+  {
+    name: "Stanford Existential Risks Initiative",
+    abbr: "SERI",
+    location: "Stanford University, USA",
+    tags: ["broad","ai","bio"],
+    color: "#c47ed4",
+    desc: "<strong>Stanford's x-risk hub.</strong> Hosts academic fellowships, summer programs for students, and cross-disciplinary working groups. Collaborates closely with CSER and Berkeley's CHAI. Important talent pipeline into both academia and policy.",
+    engagement: [
+      { type: "career", label: "Career", text: "Student and postdoctoral fellowships. Summer programme open to grad and undergrad students globally." },
+      { type: "public", label: "Public", text: "Mailing list, annual symposium, published research — accessible to non-academics." }
+    ],
+    url: "seri.stanford.edu"
+  },
+  {
+    name: "Berkeley Existential Risk Initiative",
+    abbr: "BERI",
+    location: "Berkeley, USA",
+    tags: ["ai","broad"],
+    color: "#c47ed4",
+    desc: "<strong>Infrastructure and funding for x-risk research groups.</strong> Not a research org itself — it unblocks other orgs by providing flexible funding and operational support that university bureaucracy prevents. Works closely with CHAI (Berkeley's AI alignment lab). Coordination layer of the ecosystem.",
+    engagement: [
+      { type: "donate", label: "Donate", text: "Donations go directly to unblocking the research ecosystem rather than overhead." },
+      { type: "career", label: "Career", text: "Operational and programme roles for people who want to support the field without doing primary research." }
+    ],
+    url: "existence.org"
+  },
+  {
+    name: "Nuclear Threat Initiative",
+    abbr: "NTI",
+    location: "Washington DC, USA",
+    tags: ["nuclear","bio"],
+    color: "#e8a040",
+    desc: "<strong>Founded by Ted Turner and Sam Nunn.</strong> Works directly with governments on nuclear and bio security. Runs the Nuclear Security Index — tracks every country's nuclear material security. Has directly influenced treaty negotiations and fissile material policy. High-access, high-credibility.",
+    engagement: [
+      { type: "public", label: "Public", text: "Policy reports, the NTI Index, and occasional public forums. Best resource for nuclear policy depth." },
+      { type: "career", label: "Career", text: "Policy analyst and government liaison roles — requires relevant background." },
+      { type: "donate", label: "Donate", text: "Accepts donations; majority-funded by foundations but public donations welcomed." }
+    ],
+    url: "nti.org"
+  },
+  {
+    name: "Johns Hopkins Center for Health Security",
+    abbr: "CHS",
+    location: "Baltimore, USA",
+    tags: ["bio"],
+    color: "#4db87a",
+    desc: "<strong>Leading biosecurity policy research centre.</strong> Ran the 2019 Event 201 pandemic simulation — which predicted COVID with unsettling accuracy. Advises WHO, CDC, and governments. Combines technical biosecurity with public health policy. The field's most credible voice on pandemic preparedness.",
+    engagement: [
+      { type: "public", label: "Public", text: "Free research reports, the Pandora Report newsletter, and simulation event write-ups — all public." },
+      { type: "career", label: "Career", text: "Fellowships and research roles; academic and policy backgrounds both valued." },
+      { type: "research", label: "Research", text: "Publishes extensively; contributes to WHO and CDC policy formation." }
+    ],
+    url: "centerforhealthsecurity.org"
+  },
+  {
+    name: "European Leadership Network — NEVER Project",
+    abbr: "ELN / NEVER",
+    location: "London, UK (pan-European)",
+    tags: ["nuclear","ai","broad","climate"],
+    color: "#c47ed4",
+    desc: "<strong>New European Voices on Existential Risk.</strong> Deliberately building the next generation of policymakers who understand x-risk across all domains — nuclear, AI, bio, climate. Runs an intergenerational network, podcast ('Ok, Doomer!'), and produces policy recommendations. Europe's most active talent pipeline for this field.",
+    engagement: [
+      { type: "public", label: "Public", text: "'Ok, Doomer!' podcast is genuinely accessible and high quality. Free reports and commentary." },
+      { type: "career", label: "Career", text: "Actively recruits emerging leaders from policy, security, and research backgrounds across Europe and beyond." }
+    ],
+    url: "europeanleadershipnetwork.org/never"
+  },
+  {
+    name: "Anthropic",
+    abbr: "—",
+    location: "San Francisco, USA",
+    tags: ["ai"],
+    color: "#5b8dee",
+    desc: "<strong>AI safety company — the lab behind Claude.</strong> Founded by former OpenAI researchers who left specifically over safety concerns. Publishes Responsible Scaling Policy; funds Constitutional AI and interpretability research. Unique position: both building frontier AI and researching how to make it safe. Transparency varies but is above industry average.",
+    engagement: [
+      { type: "public", label: "Public", text: "Publishes research papers on alignment, interpretability, and safety — all public. Usage Policy and RSP are public documents." },
+      { type: "career", label: "Career", text: "Safety, policy, and research roles. One of the highest-impact career paths in AI safety." }
+    ],
+    url: "anthropic.com"
+  }
+];
+
+const tagColors = { ai: 'ai', bio: 'bio', nuclear: 'nuclear', climate: 'climate', broad: 'broad' };
+const tagLabels = { ai: 'AI', bio: 'Bio', nuclear: 'Nuclear', climate: 'Climate', broad: 'Broad' };
+const engColors = { public: 'eng-public', donate: 'eng-donate', career: 'eng-career', research: 'eng-research' };
+
+const grid = document.getElementById('grid');
+
+orgs.forEach(org => {
+  const card = document.createElement('div');
+  card.className = 'org-card';
+  card.dataset.tags = org.tags.join(',');
+
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-type-bar" style="background:linear-gradient(90deg,${org.color},transparent)"></div>
+      <div class="org-abbr">${org.abbr !== '—' ? org.abbr : ''}</div>
+      <div class="org-name">${org.name}</div>
+      <div class="org-location">📍 ${org.location}</div>
+      <div class="tags">${org.tags.map(t => `<span class="tag tag-${t}">${tagLabels[t]}</span>`).join('')}</div>
+    </div>
+    <div class="card-body">
+      <div class="org-desc">${org.desc}</div>
+    </div>
+    <div class="card-footer">
+      ${org.engagement.map(e => `
+        <div class="engagement-row">
+          <span class="eng-label ${engColors[e.type]}">${e.label}</span>
+          <span class="eng-text">${e.text}</span>
+        </div>
+      `).join('')}
+      <a class="org-url" href="https://${org.url}" target="_blank" rel="noopener">↗ ${org.url}</a>
+    </div>
+  `;
+
+  grid.appendChild(card);
+});
+
+// Filter logic
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.f;
+    document.querySelectorAll('.org-card').forEach(card => {
+      if (f === 'all' || card.dataset.tags.includes(f)) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

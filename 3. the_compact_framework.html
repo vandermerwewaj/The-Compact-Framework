@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Compact — A Global Governance Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f4ef;
+  --paper: #fffef9;
+  --ink: #1c1a16;
+  --muted: #7a7468;
+  --dim: #b5afa5;
+  --border: #d8d2c8;
+  --red: #9b2c2c;
+  --green: #276749;
+  --blue: #1a4a7a;
+  --amber: #92580a;
+  --rule: #c8c0b4;
+
+  --forced: #9b2c2c;
+  --voluntary: #276749;
+  --contested: #92580a;
+  --absent: #7a7468;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Libre Baskerville', serif;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Navigation sidebar */
+nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 220px;
+  background: var(--ink);
+  padding: 2rem 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+@media(max-width:900px){
+  nav { display: none; }
+  body { padding-left: 0 !important; }
+}
+
+nav .nav-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.4);
+  padding: 0 1.5rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 1rem;
+}
+
+nav a {
+  display: block;
+  padding: 0.4rem 1.5rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: color 0.15s, background 0.15s;
+  border-left: 2px solid transparent;
+}
+
+nav a:hover { color: #fff; background: rgba(255,255,255,0.05); }
+nav a.active { color: #fff; border-left-color: #fff; background: rgba(255,255,255,0.05); }
+nav a.section-head { color: rgba(255,255,255,0.7); font-weight: 500; margin-top: 0.5rem; }
+
+body { padding-left: 220px; }
+
+/* Page */
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 3rem 6rem;
+}
+
+/* Header */
+.doc-header {
+  padding: 4rem 0 2rem;
+  border-bottom: 3px solid var(--ink);
+  margin-bottom: 3rem;
+}
+
+.doc-stamp {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.doc-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 6vw, 5rem);
+  letter-spacing: 0.05em;
+  line-height: 0.95;
+  color: var(--ink);
+}
+
+.doc-subtitle {
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-top: 0.75rem;
+}
+
+.doc-meta {
+  display: flex;
+  gap: 3rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.meta-val {
+  display: block;
+  color: var(--ink);
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+/* Sections */
+section {
+  margin-bottom: 3.5rem;
+  scroll-margin-top: 2rem;
+}
+
+h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+
+h3 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 1.5rem 0 0.6rem;
+  border-left: 3px solid var(--border);
+  padding-left: 0.75rem;
+}
+
+p { margin-bottom: 0.9rem; color: var(--ink); font-size: 0.88rem; }
+
+/* Key callout */
+.callout {
+  margin: 1.5rem 0;
+  padding: 1rem 1.3rem;
+  border-left: 4px solid var(--ink);
+  background: rgba(0,0,0,0.03);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.callout.red { border-color: var(--red); background: rgba(155,44,44,0.04); }
+.callout.green { border-color: var(--green); background: rgba(39,103,73,0.04); }
+.callout.blue { border-color: var(--blue); background: rgba(26,74,122,0.04); }
+.callout.amber { border-color: var(--amber); background: rgba(146,88,10,0.04); }
+
+/* Pillars grid */
+.pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+
+@media(max-width:600px){ .pillars { grid-template-columns: 1fr; } }
+
+.pillar {
+  background: var(--paper);
+  padding: 1.2rem;
+}
+
+.pillar-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: var(--dim);
+  line-height: 1;
+}
+
+.pillar-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin: 0.3rem 0;
+  text-transform: uppercase;
+}
+
+.pillar-text {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-top: 0.5rem;
+}
+
+/* Enforcement table */
+.enforce-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  margin: 1.5rem 0;
+}
+
+.enforce-table th {
+  background: var(--ink);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+.enforce-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.enforce-table tr:nth-child(even) td { background: rgba(0,0,0,0.02); }
+.enforce-table td:first-child { color: var(--ink); font-weight: 500; }
+
+.severity {
+  display: inline-block;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+}
+
+.sev-1 { background: #fef3f3; color: var(--amber); border: 1px solid var(--amber); }
+.sev-2 { background: #fff0e0; color: var(--amber); border: 1px solid var(--amber); }
+.sev-3 { background: #fde8e8; color: var(--red); border: 1px solid var(--red); }
+.sev-4 { background: #f5d5d5; color: var(--red); border: 1px solid var(--red); font-weight: 700; }
+
+/* Forced vs voluntary tracker */
+.indicator-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+
+@media(max-width:600px){ .indicator-grid { grid-template-columns: 1fr; } }
+
+.indicator {
+  background: var(--paper);
+  padding: 1rem;
+}
+
+.ind-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.ind-label.forced { color: var(--forced); }
+.ind-label.voluntary { color: var(--voluntary); }
+.ind-label.contested { color: var(--contested); }
+.ind-label.absent { color: var(--absent); }
+
+.ind-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+.ind-dot.forced { background: var(--forced); }
+.ind-dot.voluntary { background: var(--voluntary); }
+.ind-dot.contested { background: var(--contested); }
+.ind-dot.absent { background: var(--absent); }
+
+.ind-items { list-style: none; }
+
+.ind-items li {
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.4;
+}
+
+.ind-items li:last-child { border-bottom: none; }
+.ind-items li strong { color: var(--ink); font-weight: normal; font-style: italic; }
+
+/* Attack surface table */
+.attack-grid {
+  margin: 1.5rem 0;
+}
+
+.attack-item {
+  border: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.attack-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  background: rgba(0,0,0,0.03);
+  padding: 0.5rem 0.75rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+}
+
+.attack-header:hover { background: rgba(0,0,0,0.06); }
+.attack-name { color: var(--ink); font-weight: 500; }
+.attack-body { display: none; padding: 0.75rem; font-size: 0.75rem; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); }
+.attack-body.open { display: block; }
+
+/* Timeline */
+.timeline {
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 70px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.tl-item {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: 63px;
+  top: 0.6rem;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  z-index: 1;
+}
+
+.tl-item.forced::before { border-color: var(--forced); background: #fde8e8; }
+.tl-item.voluntary::before { border-color: var(--voluntary); background: #e8f5ee; }
+
+.tl-year {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-align: right;
+  padding-top: 0.55rem;
+}
+
+.tl-content { padding-top: 0.4rem; }
+
+.tl-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.tl-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+  line-height: 1.5;
+}
+
+.tl-badge {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.badge-forced { background: #fde8e8; color: var(--forced); border: 1px solid var(--forced); }
+.badge-voluntary { background: #e8f5ee; color: var(--voluntary); border: 1px solid var(--voluntary); }
+.badge-projected { background: #e8eef5; color: var(--blue); border: 1px solid var(--blue); }
+
+/* Legend */
+.legend-bar {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: rgba(0,0,0,0.03);
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+}
+
+.leg-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Footer note */
+.doc-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-title">The Compact</div>
+  <a href="#preamble" class="section-head">Preamble</a>
+  <a href="#design">Design Principles</a>
+  <a href="#pillars" class="section-head">Architecture</a>
+  <a href="#pillars">Five Pillars</a>
+  <a href="#enforcement" class="section-head">Enforcement</a>
+  <a href="#enforcement">Violation Tiers</a>
+  <a href="#attacks">Attack Surfaces</a>
+  <a href="#indicators" class="section-head">Recognition</a>
+  <a href="#indicators">Forced vs Voluntary</a>
+  <a href="#historical">Historical Precedents</a>
+  <a href="#complexity" class="section-head">Complexity</a>
+  <a href="#complexity">Honest Assessment</a>
+  <a href="#aidesign">AI Design Input</a>
+</nav>
+
+<div class="page">
+
+<div class="doc-header">
+  <div class="doc-stamp">Working Document · Classification: Open · Version 0.1 · February 2026</div>
+  <div class="doc-title">The Compact</div>
+  <div class="doc-subtitle">A Framework for Planetary Governance of Existential-Scale Risks</div>
+  <div class="doc-meta">
+    <div class="meta-item">Scope<span class="meta-val">Existential &amp; Civilisational Risks</span></div>
+    <div class="meta-item">Coverage<span class="meta-val">AI · Bio · Nuclear · Climate · Space</span></div>
+    <div class="meta-item">Model<span class="meta-val">Federated Authority — Not World Government</span></div>
+    <div class="meta-item">Precedent<span class="meta-val">IAEA + WTO + NPT + EU (hybrid)</span></div>
+  </div>
+</div>
+
+<!-- PREAMBLE -->
+<section id="preamble">
+  <h2>Preamble — Honest Starting Point</h2>
+
+  <div class="callout red">
+    This document does not assume good faith, shared values, or human altruism as inputs. It is engineered for a world where states lie, corporations optimise for profit, and individuals act in short-term self-interest. Any framework that requires trust to function will fail. This one is designed to function because defection is made more expensive than compliance — for everyone, including the designers.
+  </div>
+
+  <p>The core problem with every existing international governance mechanism — the UN, WTO, ICJ, WHO — is the same: <strong>they operate on state consent and have no enforcement teeth against permanent members of the Security Council or economically indispensable actors.</strong> Russia ignores ECHR rulings. The US refuses to ratify the Law of the Sea while criticising China for violating it. The ICC has indicted 44 Africans and one Russian in 23 years.</p>
+
+  <p>The framework that follows is not a UN reform proposal. It is a ground-up redesign that treats governance as an engineering problem, not a diplomacy problem. The question it answers is: <em>what is the minimum viable architecture that constrains all actors — including the most powerful — without requiring them to trust each other?</em></p>
+
+  <p>The answer involves verified consequences, distributed enforcement, and structuring compliance as the economically rational choice. This is how MAD worked during the Cold War. This is how SWIFT works now. Neither required trust. Both required credible, automated consequences.</p>
+</section>
+
+<!-- DESIGN PRINCIPLES -->
+<section id="design">
+  <h2>Design Principles</h2>
+
+  <h3>What this framework explicitly is NOT</h3>
+  <p>Not a world government. Nations retain full sovereignty over domestic matters. The Compact has jurisdiction only over <strong>planetary-commons risks</strong> — threats whose consequences cannot be contained within any single border. A country's internal tax policy is none of the Compact's business. A country's AI weapons programme or engineered pathogen research is.</p>
+
+  <h3>Core engineering constraints</h3>
+  <p><strong>No single point of control.</strong> No nation, corporation, or individual can unilaterally control the framework. All enforcement decisions require multi-body consensus with transparent override logs. This is the lesson of the Security Council veto: if one actor can block action, that actor is effectively ungoverned.</p>
+  <p><strong>Self-funding and self-enforcing where possible.</strong> The Compact should not depend on voluntary annual contributions (the UN's fatal flaw — the US has repeatedly withheld funding as leverage). Revenue comes from mandatory levies on the activities it regulates: compute sales, pharmaceutical synthesis, weapons-grade material transactions.</p>
+  <p><strong>Transparent by default, secret by exception.</strong> All decisions, deliberations, and evidence submitted are public within 90 days unless a qualified majority votes for extension. Opacity is the mechanism by which governance is captured.</p>
+  <p><strong>Adversarially designed.</strong> Every mechanism has been stress-tested against the question: "how would a bad actor — a powerful state, a rogue corporation, a captured regulator — exploit this?" Each attack surface is documented and mitigated.</p>
+</section>
+
+<!-- FIVE PILLARS -->
+<section id="pillars">
+  <h2>Architecture — Five Pillars</h2>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-num">01</div>
+      <div class="pillar-title">The Registry</div>
+      <div class="pillar-text">Mandatory global registration of: frontier AI training runs (>10²³ FLOPs), DNA synthesis above defined thresholds, weapons-grade fissile material, space launch manifests, and pandemic-class pathogen research. No registration = automatic sanctions trigger. Registration is verified by distributed audit nodes — no single nation controls verification. Think IAEA safeguards but with real-time cryptographic audit trails.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">02</div>
+      <div class="pillar-title">The Council</div>
+      <div class="pillar-text">45-member deliberative body. NOT Security Council model — no veto power. Seats allocated by: 15 elected by global population (democratic bloc), 15 by nation-state agreement (geopolitical bloc), 15 by scientific/civil society lottery from a verified expert pool (epistemic bloc). Supermajority required for binding actions. Rotating chairmanship. No permanent members. Term limits: 3 years, non-renewable.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">03</div>
+      <div class="pillar-title">The Tribunal</div>
+      <div class="pillar-text">Independent judiciary — judges selected by algorithm from pre-verified pool nominated by member states, with conflict-of-interest screening removing judges with national ties to the case. No political appointment pathway. Rulings binding and automatically referred to enforcement mechanisms without requiring political approval. Appeals to expanded bench only on procedural grounds, not political ones.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">04</div>
+      <div class="pillar-title">The Enforcement Arm</div>
+      <div class="pillar-text">Tiered escalation system — see Enforcement section. Key innovation: enforcement does not rely on military force as the primary tool. Primary leverage is economic and technical: access to the global financial clearing system, semiconductor supply chains, space launch infrastructure, and pharmaceutical patent protections are all Compact-gated. A state that defects loses access to these — not as a threat, but as an automatic consequence written into the architecture.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">05</div>
+      <div class="pillar-title">The Transparency Engine</div>
+      <div class="pillar-text">Public-facing real-time dashboard of all Registry entries, Council votes, Tribunal proceedings, and enforcement actions. Powered by redundant distributed infrastructure — no single state can take it down. Annual independent audit by rotating civil society organisations from regions with no current enforcement proceedings. The public is the ultimate enforcement mechanism; the Transparency Engine makes it functional.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ENFORCEMENT -->
+<section id="enforcement">
+  <h2>Enforcement — Violation Tiers</h2>
+
+  <div class="callout amber">
+    The critical insight from existing frameworks: enforcement that requires military action will always be blocked by powerful states. The Compact's enforcement pyramid is inverted — economic and technical consequences are primary, military force is the last resort and requires the highest threshold to trigger.
+  </div>
+
+  <table class="enforce-table">
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th>Trigger</th>
+        <th>Consequence</th>
+        <th>Who Decides</th>
+        <th>Severity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 — Registry Failure</td>
+        <td>Unregistered activity detected by monitoring systems</td>
+        <td>Automatic public disclosure + 90-day compliance window + financial surcharge deposited to Compact fund</td>
+        <td>Automated + Tribunal confirmation</td>
+        <td><span class="severity sev-1">ADMINISTRATIVE</span></td>
+      </tr>
+      <tr>
+        <td>2 — Compliance Breach</td>
+        <td>Registered but operating outside agreed safety parameters</td>
+        <td>Activity suspended pending audit; reputational publication; access to Compact-gated trade benefits suspended for that domain</td>
+        <td>Tribunal — 21 day process</td>
+        <td><span class="severity sev-2">OPERATIONAL</span></td>
+      </tr>
+      <tr>
+        <td>3 — Material Violation</td>
+        <td>Deliberate concealment, falsified registry, or prohibited activity confirmed</td>
+        <td>Full economic sanctions package (SWIFT access, semiconductor exports, patent protections suspended); Council escalation mandatory</td>
+        <td>Tribunal + Council supermajority (27/45)</td>
+        <td><span class="severity sev-3">ECONOMIC</span></td>
+      </tr>
+      <tr>
+        <td>4 — Existential Breach</td>
+        <td>Activity assessed as posing imminent planetary-scale harm (engineered pandemic release, AGI deployment without safety verification, nuclear use)</td>
+        <td>Full isolation protocol: all Compact-gated infrastructure withdrawn; collective defensive response authorised; Tribunal convenes in emergency session within 48 hours</td>
+        <td>Emergency Council (15-member rotating panel; 12/15 threshold); full Council ratification within 30 days</td>
+        <td><span class="severity sev-4">EXISTENTIAL</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Why economic enforcement works where military doesn't</h3>
+  <p>A state can defy a military ultimatum — history is full of examples. A state cannot easily defy exclusion from SWIFT (global financial clearing), semiconductor supply chains, pharmaceutical patent protections, and space launch infrastructure simultaneously. Iran under sanctions, Russia post-2022, North Korea — all demonstrate that economic isolation creates genuine costs even for defiant regimes. The Compact's key design move is making these consequences <em>automatic and distributed</em> so no single actor can lift them unilaterally. They are written into the technical architecture, not enforced by political will.</p>
+
+  <h3>The nuclear problem — special handling</h3>
+  <p>The 9 existing nuclear states present the hardest case: they will not submit their arsenals to a body they don't control. The Compact's approach here is incremental — it does not demand disarmament as a condition of entry. It demands: registration of all weapons-grade material, ratification of no-first-use doctrine, and participation in the verification regime. Non-submission to these three triggers Tier 3 consequences. This is a tighter version of the NPT with real enforcement rather than polite non-compliance.</p>
+</section>
+
+<!-- ATTACK SURFACES -->
+<section id="attacks">
+  <h2>Attack Surfaces — Every Angle Humanity Can Think Of</h2>
+
+  <p>This is the section most governance proposals skip. Every attack surface below was identified by asking: "how would a sophisticated bad actor undermine this?" Each has a designed mitigation.</p>
+
+  <div class="attack-grid" id="attacks-grid"></div>
+</section>
+
+<!-- FORCED VS VOLUNTARY -->
+<section id="indicators">
+  <h2>Recognition Guide — Forced vs Voluntary Governance</h2>
+
+  <p>This is the practical tool you asked for. How do you know, when global governance arrives, whether you are seeing genuine voluntary coordination or forced compliance dressed as consensus? The signals are distinct.</p>
+
+  <div class="legend-bar">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--voluntary)"></div> Voluntary signals</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--forced)"></div> Forced signals</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--contested)"></div> Contested / ambiguous</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--absent)"></div> Absence = warning sign</div>
+  </div>
+
+  <div class="indicator-grid">
+    <div class="indicator">
+      <div class="ind-label voluntary"><span class="ind-dot voluntary"></span>Voluntary Signals</div>
+      <ul class="ind-items">
+        <li><strong>Opt-in sequencing:</strong> Major powers join before framework has enforcement power</li>
+        <li><strong>Public ratification:</strong> Treaties go through domestic legislative bodies, not executive orders</li>
+        <li><strong>Built-in exit mechanisms:</strong> Withdrawal process defined, not punished</li>
+        <li><strong>Civil society co-authorship:</strong> NGOs and expert bodies helped write the rules, not just consulted post-hoc</li>
+        <li><strong>Benefit distribution visible:</strong> Global South demonstrably gains, not just wealthy nations</li>
+        <li><strong>Transparency precedes enforcement:</strong> Monitoring system live before penalties exist</li>
+        <li><strong>Dissent published:</strong> Minority council positions publicly recorded</li>
+      </ul>
+    </div>
+    <div class="indicator">
+      <div class="ind-label forced"><span class="ind-dot forced"></span>Forced Signals</div>
+      <ul class="ind-items">
+        <li><strong>Crisis trigger:</strong> Framework announced within 12 months of catastrophic event</li>
+        <li><strong>Emergency powers language:</strong> "Temporary" provisions that have no defined sunset</li>
+        <li><strong>Ratification bypassed:</strong> Implemented by executive decree or emergency mechanism</li>
+        <li><strong>Asymmetric burden:</strong> Smaller states bear compliance costs; major powers exempt or self-exempt</li>
+        <li><strong>Opacity at founding:</strong> Negotiated behind closed doors; text released after signing</li>
+        <li><strong>Enforcement precedes framework:</strong> Consequences applied before rules fully defined</li>
+        <li><strong>No exit mechanism:</strong> Withdrawal treated as hostile act</li>
+      </ul>
+    </div>
+    <div class="indicator">
+      <div class="ind-label contested"><span class="ind-dot contested"></span>Absence = Warning</div>
+      <ul class="ind-items">
+        <li><strong>No Global South leadership:</strong> Framework designed entirely by wealthy nations</li>
+        <li><strong>Corporate capture signals:</strong> Industry lobbied to write compliance definitions</li>
+        <li><strong>No independent tribunal:</strong> Disputes resolved by political body, not judicial one</li>
+        <li><strong>No public dashboard:</strong> Actions and decisions not publicly trackable in real time</li>
+        <li><strong>Funding by voluntary contribution:</strong> Same flaw as UN — leverage remains with funders</li>
+        <li><strong>Science advisory role only:</strong> Experts can advise but not bind decisions</li>
+        <li><strong>AI governance absent:</strong> Any 2026+ framework that doesn't explicitly cover AI is already captured</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    The most important single indicator: <strong>who wrote the exit clause?</strong> Voluntary frameworks have clear, non-punitive withdrawal mechanisms written by neutral parties. Forced frameworks either have no exit, or an exit designed to be too costly to use. Check this first.
+  </div>
+</section>
+
+<!-- HISTORICAL PRECEDENTS -->
+<section id="historical">
+  <h2>Historical Precedents — What Actually Worked</h2>
+
+  <div class="timeline">
+    <div class="tl-item voluntary">
+      <div class="tl-year">1945</div>
+      <div class="tl-content">
+        <div class="tl-title">Bretton Woods System <span class="tl-badge badge-voluntary">VOLUNTARY</span></div>
+        <div class="tl-desc">IMF + World Bank created pre-emptively to prevent post-war economic collapse. Worked because US had overwhelming economic dominance and made compliance the rational choice. Flaw: voting power reflected 1945 power, not 2025 reality.</div>
+      </div>
+    </div>
+    <div class="tl-item forced">
+      <div class="tl-year">1945</div>
+      <div class="tl-content">
+        <div class="tl-title">United Nations <span class="tl-badge badge-forced">FORCED BY WWII</span></div>
+        <div class="tl-desc">Created in direct response to catastrophe. Security Council veto built in to get major powers to join — which immediately crippled enforcement. Classic forced-governance compromise: enough to look real, not enough to work.</div>
+      </div>
+    </div>
+    <div class="tl-item voluntary">
+      <div class="tl-year">1957</div>
+      <div class="tl-content">
+        <div class="tl-title">IAEA <span class="tl-badge badge-voluntary">VOLUNTARY + INSPECTIONS</span></div>
+        <div class="tl-desc">Best working model for the Compact. Safeguards system with real inspectors, real verification, real consequences (NPT expulsion). Flaw: major nuclear powers exempt from same scrutiny as small states. Compact fixes this.</div>
+      </div>
+    </div>
+    <div class="tl-item voluntary">
+      <div class="tl-year">1994</div>
+      <div class="tl-content">
+        <div class="tl-title">SWIFT Financial Network <span class="tl-badge badge-voluntary">TECHNICAL ENFORCEMENT</span></div>
+        <div class="tl-desc">Best enforcement model. No army. No political vote required. Exclusion from SWIFT is automatic, devastating, and credible. Iran and Russia both confirm its effectiveness. The Compact's economic enforcement tier is modelled directly on this.</div>
+      </div>
+    </div>
+    <div class="tl-item forced">
+      <div class="tl-year">2020</div>
+      <div class="tl-content">
+        <div class="tl-title">COVID Vaccine Nationalism <span class="tl-badge badge-forced">FORCED FAILURE</span></div>
+        <div class="tl-desc">What happens when global governance is absent during a planetary crisis. Wealthy nations hoarded vaccines; poorer nations waited. Delta and Omicron variants emerged in unvaccinated populations and spread globally — proving that unequal governance is self-defeating even for those who "win" the initial hoarding race.</div>
+      </div>
+    </div>
+    <div class="tl-item voluntary">
+      <div class="tl-year">2026+</div>
+      <div class="tl-content">
+        <div class="tl-title">The Compact — Projected <span class="tl-badge badge-projected">PROJECTED</span></div>
+        <div class="tl-desc">Either emerges voluntarily from the current x-risk awareness movement + EU AI Act precedent, or is forced into existence by an event. The question is not if but which trigger creates it — and whether that trigger leaves enough functional civilisation to build something worth having.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPLEXITY ASSESSMENT -->
+<section id="complexity">
+  <h2>Complexity — Honest Assessment</h2>
+
+  <p>You asked how complex this would be. The honest answer: <strong>more complex than any single human institution ever built, less complex than the global financial system that already exists.</strong></p>
+
+  <p>The global financial system — SWIFT, correspondent banking, foreign exchange clearing, derivative markets — coordinates trillions of dollars of transactions per day across 200+ jurisdictions with no central authority and no world government. It works because the architecture makes cooperation the path of least resistance and defection costly. The Compact is structurally simpler than this. The complexity is political, not technical.</p>
+
+  <p>The specific complexity layers:</p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-num" style="font-size:1.5rem">LEGAL</div>
+      <div class="pillar-title">Treaty Architecture</div>
+      <div class="pillar-text">Requires a new founding treaty — not a UN amendment (too slow, veto-blocked) but a parallel instrument like the Rome Statute that creates the ICC. Minimum viable: 50 states representing 60% of global GDP ratify within 5 years. After that, economic gravity pulls others in.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num" style="font-size:1.5rem">TECHNICAL</div>
+      <div class="pillar-title">Verification Infrastructure</div>
+      <div class="pillar-text">AI compute monitoring (already technically feasible — GPU supply chains are traceable). DNA synthesis monitoring (already partially in place via BioWatch). Pathogen surveillance (WHO has infrastructure; needs authority). Nuclear — IAEA already does this. The tools exist. The mandate doesn't.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num" style="font-size:1.5rem">POLITICAL</div>
+      <div class="pillar-title">Major Power Buy-In</div>
+      <div class="pillar-text">The US and China must both join or the framework is irrelevant. Neither will join something the other controls. Solution: neither controls it — the distributed Council model with no veto is explicitly designed so both join knowing neither dominates. Self-interest, not altruism.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num" style="font-size:1.5rem">EQUITY</div>
+      <div class="pillar-title">Global South Inclusion</div>
+      <div class="pillar-text">Any framework perceived as a wealthy-nation club will be rejected and rightly so. The 15 population-elected Council seats must be weighted so that India, Nigeria, Indonesia, and Brazil have genuine power — not consultative status. Compliance benefits must visibly flow to the Global South first.</div>
+    </div>
+  </div>
+</section>
+
+<!-- AI DESIGN INPUT -->
+<section id="aidesign">
+  <h2>AI Design Input — What This Framework Would Recommend</h2>
+
+  <div class="callout blue">
+    You asked what AI would recommend if tasked with solving this. The answer is uncomfortable in one specific way: the framework above is technically sound. The barrier is not design — it's political will. An AI's honest addition to this document is therefore not more architecture. It's a probability-weighted implementation path.
+  </div>
+
+  <h3>Path A — Voluntary emergence (15% probability)</h3>
+  <p>The EU AI Act creates a regulatory gravity well that pulls other jurisdictions toward compliance simply to maintain market access. This "Brussels Effect" repeats — a coalition of 30–40 states builds the Compact voluntarily, and economic gravity does the rest. Timeline: 2028–2035. Precondition: no catastrophic AI or bio event disrupts the political window.</p>
+
+  <h3>Path B — Crisis-forced emergence (70% probability)</h3>
+  <p>A sufficiently dramatic event — an AI system causing verifiable mass harm, an engineered pathogen release, a nuclear near-miss that actually detonates — creates the psychological shock that makes the politically impossible merely politically difficult. The Compact or something like it is assembled in its wake. Timeline: unknowable, but the framework must be pre-designed and ready to deploy. The reason to design it now is to have a blueprint when the moment arrives — because crisis governance assembled in panic produces the forced/captured version.</p>
+
+  <h3>Path C — No emergence (15% probability)</h3>
+  <p>The crisis that would force governance is the crisis that eliminates the capacity to govern. Engineered pandemic at sufficient lethality, AGI-level system deployed without alignment, nuclear exchange — any of these could cross the threshold from "crisis that creates governance" to "civilisational disruption that ends the option." This is why the window matters. The longer voluntary emergence is delayed, the higher the probability that Path B's triggering event is Path C's terminating event.</p>
+
+  <h3>The AI's single most important recommendation</h3>
+  <p><strong>Pre-draft the treaty text now, in public, with the x-risk organisations as co-authors.</strong> When the crisis arrives — and it will — the political window for action is measured in weeks, not years. Governance assembled from scratch under pressure produces the UN: structurally compromised from birth. The Compact, if drafted, debated, and refined in advance, can be ratified and operational within months of a triggering event rather than decades. The design work is the most valuable thing that can be done before the crisis. After it, there is no time.</p>
+</section>
+
+<div class="doc-footer">
+  Document classification: Open · No rights reserved · Reproduce freely · Version 0.1<br>
+  This framework is a working design document, not a finished proposal. Every section is a starting point for deeper discussion.<br>
+  The attack surfaces section is intentionally incomplete — the best attack surfaces are the ones the designers haven't thought of yet.
+</div>
+
+</div><!-- end page -->
+
+<script>
+// Attack surfaces data
+const attacks = [
+  {
+    name: "Regulatory Capture",
+    likelihood: "HIGH",
+    domain: "Political",
+    mitigation: "Industry representatives barred from Compact Council and Tribunal roles. Cooling-off period: 10 years between industry employment and Compact position. All deliberations public within 90 days. Independent audit of Council members' financial interests, updated quarterly and published.",
+    exploit: "Corporations place former employees or funded academics in Council seats. Regulations written to disadvantage competitors rather than reduce risk. Definition of 'safe' AI gradually shifts to match what leading labs already produce."
+  },
+  {
+    name: "Great Power Veto via Funding Withdrawal",
+    likelihood: "HIGH",
+    domain: "Economic",
+    mitigation: "Compact funded by mandatory levies on regulated activities (GPU sales, DNA synthesis, weapons material transactions) — not voluntary contributions. No single state contributes more than 15% of budget. Endowment fund targets 10-year operational reserve so no single actor's withdrawal is existential.",
+    exploit: "Dominant economies (US, China, EU) threaten to withhold funding unless rules are written to their advantage. This is how the US has historically constrained UN action."
+  },
+  {
+    name: "Parallel Shadow Governance",
+    likelihood: "MEDIUM",
+    domain: "Geopolitical",
+    mitigation: "Economic gravity: if Compact-gated infrastructure (SWIFT access, semiconductor exports, pharma patents) is valuable enough, parallel systems cannot achieve equivalent utility. Make the Compact worth being inside. Historical model: WTO — countries that stayed out lost more than they gained.",
+    exploit: "US and China each build their own governance blocs. Compact becomes a framework for the middle powers only. Great powers operate outside it with impunity."
+  },
+  {
+    name: "Definition Creep",
+    likelihood: "HIGH",
+    domain: "Legal",
+    mitigation: "Technical definitions locked in foundational treaty and amendable only by supermajority (34/45 Council) with 2-year process. Separate 'technical standards board' of scientists sets quantitative thresholds (e.g., what FLOPs count as 'frontier AI') — insulated from political body. Standards reviewed every 3 years by independent expert panel.",
+    exploit: "What counts as a 'frontier AI system' or 'weapons-grade pathogen' is gradually redefined to exempt current activities. The framework remains nominally intact while covering nothing dangerous."
+  },
+  {
+    name: "Emergency Powers Abuse",
+    likelihood: "MEDIUM",
+    domain: "Constitutional",
+    mitigation: "Emergency Council powers automatically expire after 90 days unless re-ratified by full Council. Emergency measures cannot override Tribunal jurisdiction. All emergency actions published in real-time to Transparency Engine. Civil society watchdog has standing to challenge emergency declarations in Tribunal within 72 hours.",
+    exploit: "A genuine crisis is used to invoke emergency powers that never sunset. 'Temporary' Compact authority over member state domestic policy becomes permanent. The framework becomes the authoritarian overreach it was designed to prevent."
+  },
+  {
+    name: "Technological Circumvention",
+    likelihood: "MEDIUM",
+    domain: "Technical",
+    mitigation: "Registry monitoring uses distributed sensor networks — not self-reporting. AI compute tracked at hardware supply chain level (chip manufacture, not just use). DNA synthesis monitored at machine level with cryptographic audit trails. Monitoring architecture open-source and independently verifiable so no single actor controls what is seen.",
+    exploit: "Actors develop AI systems using distributed, low-profile compute that stays below Registry thresholds individually but aggregates to frontier capability. Pathogens engineered through incremental steps each below monitoring thresholds."
+  },
+  {
+    name: "Legitimacy Attack",
+    likelihood: "HIGH",
+    domain: "Political",
+    mitigation: "15 of 45 Council seats elected by global population (not by states) — gives Compact direct democratic legitimacy separate from state endorsement. Annual public legitimacy report from independent civil society organisations. Compact actively publicises benefits flowing to non-member and Global South populations to build organic support.",
+    exploit: "Major power declares Compact illegitimate — a tool of Western hegemony, or alternatively Chinese/Russian influence. Domestic audiences convinced that Compact membership is a sovereignty violation. Framework collapses through withdrawal cascade."
+  },
+  {
+    name: "The Architect's Dilemma",
+    likelihood: "CERTAIN",
+    domain: "Meta",
+    mitigation: "No mitigation fully resolves this. Partial mitigation: rotating leadership with no permanent members; mandatory framework review every 10 years by independent body including representatives of populations born after the framework was created; explicit constitutional mechanisms for the framework to be reformed or dissolved.",
+    exploit: "The nations and institutions that design the Compact build in advantages for themselves — consciously or not. Every governance framework in history has been shaped to serve its founders' interests. The Compact will be no different. The question is whether the embedded advantages are small enough that the framework is still useful."
+  }
+];
+
+const grid = document.getElementById('attacks-grid');
+
+attacks.forEach((a, i) => {
+  const el = document.createElement('div');
+  el.className = 'attack-item';
+
+  const likelihoodColor = a.likelihood === 'HIGH' ? 'var(--red)' : a.likelihood === 'MEDIUM' ? 'var(--amber)' : 'var(--green)';
+
+  el.innerHTML = `
+    <div class="attack-header" onclick="toggleAttack(${i})">
+      <span class="attack-name">${a.name}</span>
+      <span style="color:${likelihoodColor}">${a.likelihood} likelihood</span>
+      <span style="color:var(--muted)">${a.domain} domain ▶</span>
+    </div>
+    <div class="attack-body" id="atk-${i}">
+      <strong style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);">How it's exploited:</strong><br>
+      ${a.exploit}<br><br>
+      <strong style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);">Mitigation:</strong><br>
+      ${a.mitigation}
+    </div>
+  `;
+  grid.appendChild(el);
+});
+
+function toggleAttack(i) {
+  const body = document.getElementById('atk-' + i);
+  body.classList.toggle('open');
+}
+window.toggleAttack = toggleAttack;
+
+// Nav scroll highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
